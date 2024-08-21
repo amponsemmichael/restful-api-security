@@ -1,6 +1,5 @@
 package com.amponsem.restful_api_security.Config;
 
-
 import com.amponsem.restful_api_security.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
