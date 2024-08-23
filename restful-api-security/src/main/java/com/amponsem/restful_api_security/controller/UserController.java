@@ -1,25 +1,41 @@
 package com.amponsem.restful_api_security.controller;
 
 import com.amponsem.restful_api_security.model.Users;
-import jakarta.validation.Valid;
-import org.springframework.security.core.userdetails.User;
+import org.owasp.encoder.Encode;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.ArrayList;
+import java.util.List;
 
+@RestController
+@RequestMapping("/api")
 public class UserController {
 
-    @GetMapping("/")
-    public String test() {
-        return "How secured is your system";
-    }
+    private List<Users> users = new ArrayList<>();
 
     @PostMapping("/create")
-    public String create(@Valid @RequestBody Users user) {
-        // Handle creation logic
-        return "User created successfully";
+    public ResponseEntity<String> createUser(@Validated @RequestBody Users user) {
+        // Input validation is automatically handled by @Validated
+        users.add(user);
+        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<String> getUserByEmail(@PathVariable("email") String email) {
+        // Output encoding
+        String safeEmail = Encode.forHtml(email);
+
+        for (Users user : users) {
+            if (user.getEmail().equalsIgnoreCase(safeEmail)) {
+                return new ResponseEntity<>("User found: " + Encode.forHtml(user.getName()), HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity<>("Unknown user", HttpStatus.NOT_FOUND);
     }
 
 }
-
-

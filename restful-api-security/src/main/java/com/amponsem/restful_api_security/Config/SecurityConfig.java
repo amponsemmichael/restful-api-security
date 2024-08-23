@@ -1,47 +1,41 @@
 package com.amponsem.restful_api_security.Config;
 
-import com.amponsem.restful_api_security.services.MyUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private MyUserDetailsService userDetailsService;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+       return http
+                .csrf(AbstractHttpConfigurer::disable)  // Update based on your security needs
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(withDefaults())  // Use 'withDefaults()' instead of '.httpBasic()'
 
-        //basically all users need to be authenticated
-        return http
-               .csrf(AbstractHttpConfigurer::disable)
-               .authorizeHttpRequests(request -> request.anyRequest().authenticated())
-               .formLogin(Customizer.withDefaults())
-               .httpBasic(Customizer.withDefaults())
-
-               .build();
+                .build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        authProvider.setUserDetailsService(userDetailsService);
-
-        return authProvider;
-
+    public UserDetailsService userDetailsService() {
+        var user = User.withUsername("michael")
+                .password("password")  // {noop} is used for plain text; use bcrypt in production
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user);
     }
-
 }
+
