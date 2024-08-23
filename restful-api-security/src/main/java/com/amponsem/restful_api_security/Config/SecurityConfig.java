@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         var user = User.withUsername("michael")
-                .password("password")  // {noop} is used for plain text; use bcrypt in production
+                .password("password")
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user);

@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@Validated @RequestBody Users user) {
-        // Input validation is automatically handled by @Validated
+        // by default the @Validated handles the input validation
         users.add(user);
         return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
     }
@@ -31,7 +31,7 @@ public class UserController {
 
         for (Users user : users) {
             if (user.getEmail().equalsIgnoreCase(safeEmail)) {
-                return new ResponseEntity<>("User found: " + Encode.forHtml(user.getName()), HttpStatus.OK);
+                return new ResponseEntity<>("User not found: " + Encode.forHtml(user.getName()), HttpStatus.OK);
             }
         }
 
