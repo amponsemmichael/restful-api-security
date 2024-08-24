@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults())  // Use 'withDefaults()' instead of '.httpBasic()'
+                .httpBasic(withDefaults())  //
 
                 .build();
     }
@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         var user = User.withUsername("michael")
-                .password("password")
+                .password("{noop}password")
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(user);
